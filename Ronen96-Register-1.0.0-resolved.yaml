@@ -1,0 +1,322 @@
+---
+openapi: 3.0.0
+info:
+  title: League Mangement API
+  description: league managment api
+  contact:
+    email: ronenara@post.bgu.ac.il
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/Ronen96/Register/1.0.0
+  description: SwaggerHub API Auto Mocking
+- url: https://virtserver.swaggerhub.com/ben-gurion8/Register/1.0.0
+  description: SwaggerHub API Auto Mocking
+tags:
+- name: admins
+  description: Secured Admin-only calls
+- name: developers
+  description: Operations available to regular developers
+paths:
+  /about:
+    get:
+      tags:
+      - user
+      summary: this is about page
+      description: A json object contains all the details about the authors, the project and previous projects
+      responses:
+        "200":
+          description: about page has been shown
+        "404":
+          description: page not available
+  /register:
+    post:
+      tags:
+      - user
+      summary: A new user from the client is added to the server
+      description: A JSON object contains all the details about the new user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+        required: true
+      responses:
+        "201":
+          description: A new user has been added
+        "400":
+          description: wrong input parameters
+  /login:
+    post:
+      tags:
+      - user
+      summary: A signed up user logging in
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+        required: true
+      responses:
+        "201":
+          description: User logged in
+        "400":
+          description: wrong input parameters
+  /logout:
+    get:
+      tags:
+      - user
+      summary: A signed up user logging out
+      responses:
+        "200":
+          description: User logged out
+        "401":
+          description: No logged in user
+  /player/{playerID}:
+    get:
+      tags:
+      - player
+      summary: show players's page
+      parameters:
+      - name: playerID
+        in: path
+        description: player info
+        required: true
+        style: simple
+        explode: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/player'
+      responses:
+        "200":
+          description: data of the specific playerid
+        "404":
+          description: playerid not found
+  /team/{teamID}:
+    get:
+      tags:
+      - team
+      summary: show team's page
+      parameters:
+      - name: teamID
+        in: path
+        description: ID of team
+        required: true
+        style: simple
+        explode: false
+        content:
+          application/json:
+            schema:
+              properties:
+                team:
+                  $ref: '#/components/schemas/team'
+                past-games:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/game'
+                future-games:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/game'
+      responses:
+        "200":
+          description: successful search
+        "404":
+          description: No such ID
+  /Coach/{coachID}:
+    get:
+      tags:
+      - coachID
+      summary: show coach's page
+      parameters:
+      - name: coachID
+        in: path
+        description: the coach id
+        required: true
+        style: simple
+        explode: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/coach'
+      responses:
+        "200":
+          description: data of the specific coachid
+        "404":
+          description: coachid not found
+  /currentfixture:
+    get:
+      summary: games of current fixture
+      parameters:
+      - name: title
+        in: query
+        description: games of current fixture
+        required: true
+        style: form
+        explode: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/game'
+      responses:
+        "200":
+          description: games of current fixture
+        "401":
+          description: Could not fetch information
+components:
+  schemas:
+    UserRegister:
+      type: object
+      properties:
+        username:
+          maxLength: 8
+          minLength: 3
+          type: string
+          description: username contains between 3 to 8 letters only
+        firstname:
+          type: string
+          description: user's first name
+          example: Bob
+        lastname:
+          type: string
+          description: user's last name
+          example: Cohen
+        country:
+          type: string
+          description: user's country
+          example: greece
+        password:
+          maxLength: 10
+          minLength: 5
+          type: string
+          description: password contains between 5 to 10 chars, at least one of them is a number and a special char
+          format: password
+          example: hantrish!9
+        email:
+          type: string
+          description: user's email
+          format: email
+          example: bibiKing@walla.com
+        image-url:
+          type: string
+          description: URL for the user's logo
+          format: URL
+          example: https://cloudinary.com/bibi
+      description: Model containing user info
+    UserLogin:
+      properties:
+        username:
+          maxLength: 8
+          minLength: 3
+          type: string
+          description: username contains between 3 to 8 letters only
+        password:
+          maxLength: 10
+          minLength: 5
+          type: string
+          format: password
+    team:
+      type: object
+      properties:
+        players:
+          type: array
+          items:
+            $ref: '#/components/schemas/player'
+        coach:
+          $ref: '#/components/schemas/coach'
+        name:
+          type: string
+          example: Chelsea FC
+        favorite:
+          type: boolean
+          description: team is in list of favorite teams by user
+          example: true
+      description: team info
+    player:
+      type: object
+      properties:
+        common name:
+          type: string
+          description: player's name
+          example: Didier Drogba
+        nationality:
+          type: string
+          description: player's nationality
+          example: Cote Dlvoire
+        date of birth:
+          type: string
+          description: player's date of birth
+          format: date-time
+          example: 1992-05-26T23:20:50.52Z
+        country of birth:
+          type: string
+          description: player's country of birth
+          example: Cote Dlvoire
+        height:
+          type: number
+          description: player's height
+          example: 1.85
+        weight:
+          type: number
+          description: player's weight
+          example: 75
+        favorite:
+          type: boolean
+          description: player is in list of favorite players by user
+          example: true
+      description: player info
+    coach:
+      type: object
+      properties:
+        common name:
+          type: string
+          description: coach's name
+          example: Jose Mourinho
+        nationality:
+          type: string
+          description: coach's nationality
+          example: Portugal
+        date of birth:
+          type: string
+          description: coach's date of birth
+          format: date-time
+          example: 1992-05-26T23:20:50.52Z
+        country of birth:
+          type: string
+          description: coach's country of birth
+          example: Portugal
+      description: coach info
+    game:
+      type: object
+      properties:
+        date:
+          type: string
+          description: game's full date
+          format: date-time
+          example: 1992-05-26T23:20:50.52Z
+        home team:
+          $ref: '#/components/schemas/team'
+        away team:
+          $ref: '#/components/schemas/team'
+        home score:
+          type: integer
+          description: score of home team
+          example: 4
+        away score:
+          type: integer
+          description: score of away team
+          example: 0
+        stadium:
+          type: string
+          description: game's stadium
+          example: Stamford Bridge
+        favorite:
+          type: boolean
+          description: game is in list of favorite games by user
+          example: true
+      description: game info
