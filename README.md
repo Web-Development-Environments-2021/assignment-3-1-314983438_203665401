@@ -7,4 +7,4 @@ Ronen Aranovich- 314983438
 
 Ohad Shriki- 203665401
 
-Estimated time to develop: no rockets from Gaza- month, else- unknown 
+Estimated time to develop: no rockets from Gaza- two weeks, else- unknown 
